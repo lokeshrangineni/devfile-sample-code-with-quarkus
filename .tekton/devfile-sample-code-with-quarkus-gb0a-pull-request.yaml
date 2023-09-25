@@ -201,13 +201,13 @@ spec:
       workspaces:
       - name: source
         workspace: workspace
-    - name: trusted-content3
+    - name: trusted-content4
       taskSpec:
         workspaces:
         - name: source
         steps:
         - name: redhat-dependency-analytics1
-          image: quay.io/lrangine/exhort-javascript-api:0.7.0-alpha
+          image: quay.io/lrangine/crda-maven:11.0
           workingDir: "$(workspaces.source.path)"
         env:
         - name: EXHORT_SNYK_TOKEN
