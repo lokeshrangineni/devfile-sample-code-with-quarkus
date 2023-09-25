@@ -201,20 +201,17 @@ spec:
       workspaces:
       - name: source
         workspace: workspace
-    - name: trusted-content1
+    - name: trusted-content2
       params:
       - name: manifest-file-path
         description: Path to target manifest file within the project directory.
         default: pom.xml
-
       - name: project-directory-path
         description: Path to directory within workspace, where the project is installed.
         default: project-package
-
       - name: output-file-path
         description: Path to file within workspace, where the analysis report is saved.
         default: redhat-dependency-analytics-report.json
-
       - name: image
         description: Image where Exhort Javascript API and required dependencies are installed.
         default: quay.io/ecosystem-appeng/exhort-javascript-api:0.7.0-alpha
