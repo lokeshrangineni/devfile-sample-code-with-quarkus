@@ -1,4 +1,4 @@
-Testing the CI/CD pipeline 18 times.
+Testing the CI/CD pipeline 20 times.
 # Creating an application with a Quarkus code sample
 
 **Note:** The Quarkus code sample uses the **8081** HTTP port.
