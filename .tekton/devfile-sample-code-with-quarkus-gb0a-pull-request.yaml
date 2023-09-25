@@ -201,40 +201,38 @@ spec:
       workspaces:
       - name: source
         workspace: workspace
-    - name: trusted-content1
+  - name: trusted-content1
       params:
-      - name: manifest-file-path
-        description: Path to target manifest file within the project directory.
-        default: pom.xml
+          - name: manifest-file-path
+            description: Path to target manifest file within the project directory.
 
-      - name: project-directory-path
-        description: Path to directory within workspace, where the project is installed.
-        default: project-package
+            - name: project-directory-path
+              description: Path to directory within workspace, where the project is installed.
+              default: project-package
 
-      - name: output-file-path
-        description: Path to file within workspace, where the analysis report is saved.
-        default: redhat-dependency-analytics-report.json
+            - name: output-file-path
+              description: Path to file within workspace, where the analysis report is saved.
+              default: redhat-dependency-analytics-report.json
 
-      - name: image
-        description: Image where Exhort Javascript API and required dependencies are installed.
-        default: quay.io/ecosystem-appeng/exhort-javascript-api:0.7.0-alpha
+            - name: image
+              description: Image where Exhort Javascript API and required dependencies are installed.
+              default: quay.io/ecosystem-appeng/exhort-javascript-api:0.7.0-alpha
       taskSpec:
         workspaces:
-        - name: source
+          - name: source
         steps:
-        - name: redhat-dependency-analytics1
-          image: quay.io/ecosystem-appeng/exhort-javascript-api:0.7.0-alpha
-          workingDir: "$(workspaces.source.path)"
-        env:
+          - name: redhat-dependency-analytics
+            image: quay.io/ecosystem-appeng/exhort-javascript-api:0.7.0-alpha
+            workingDir: "$(workspaces.source.path)"
+      env:
         - name: EXHORT_SNYK_TOKEN
           valueFrom:
             secretKeyRef:
               name: exhort
               key: EXHORT_SNYK_TOKEN
-        script: |
+      script: |
         #!/bin/sh
-        echo "Running the scan using trusted content. Please wait it may take some time."
-        ls -lah
+
         project_directory="$(params.project-directory-path)"
         manifest_file="$(params.manifest-file-path)"
         output_file="$(params.output-file-path)"
@@ -244,12 +242,11 @@ spec:
         else
           sh /exhort.sh "$manifest_file" "$output_file"
         fi
-        echo "Scan results: " |  cat "$output_file"
       runAfter:
-      - clone-repository
+        - clone-repository
       workspaces:
-      - name: source
-        workspace: workspace
+        - name: source
+          workspace: workspace
     - name: build-container
       params:
       - name: IMAGE
