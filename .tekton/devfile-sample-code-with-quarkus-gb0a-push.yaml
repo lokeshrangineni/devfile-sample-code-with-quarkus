@@ -202,6 +202,7 @@ spec:
       params:
         - name: manifest-file-path
           description: Path to target manifest file within the project directory.
+          default: pom.xml
 
         - name: project-directory-path
           description: Path to directory within workspace, where the project is installed.
@@ -221,13 +222,13 @@ spec:
           - name: redhat-dependency-analytics
             image: quay.io/ecosystem-appeng/exhort-javascript-api:0.7.0-alpha
             workingDir: "$(workspaces.source.path)"
-      env:
-        - name: EXHORT_SNYK_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: exhort
-              key: EXHORT_SNYK_TOKEN
-      script: |
+        env:
+          - name: EXHORT_SNYK_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: exhort
+                key: EXHORT_SNYK_TOKEN
+        script: |
         #!/bin/sh
 
         project_directory="$(params.project-directory-path)"
@@ -235,9 +236,9 @@ spec:
         output_file="$(params.output-file-path)"
 
         if [ -n "$project_directory" ]; then
-          sh /exhort.sh "$project_directory/$manifest_file" "$output_file"
+        sh /exhort.sh "$project_directory/$manifest_file" "$output_file"
         else
-          sh /exhort.sh "$manifest_file" "$output_file"
+        sh /exhort.sh "$manifest_file" "$output_file"
         fi
       runAfter:
         - clone-repository
