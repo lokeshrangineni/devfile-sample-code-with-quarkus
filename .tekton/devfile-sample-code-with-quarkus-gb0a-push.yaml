@@ -198,7 +198,7 @@ spec:
       workspaces:
       - name: source
         workspace: workspace
-    - name: trusted-content
+    - name: trusted-content1
       params:
         - name: manifest-file-path
           description: Path to target manifest file within the project directory.
@@ -218,7 +218,7 @@ spec:
         workspaces:
           - name: source
         steps:
-          - name: redhat-dependency-analytics
+          - name: redhat-dependency-analytics1
             image: quay.io/ecosystem-appeng/exhort-javascript-api:0.7.0-alpha
             workingDir: "$(workspaces.source.path)"
       env:
