@@ -198,7 +198,7 @@ spec:
       workspaces:
       - name: source
         workspace: workspace
-    - name: trusted-content1
+    - name: trusted-content
       params:
         - name: manifest-file-path
           description: Path to target manifest file within the project directory.
@@ -229,7 +229,8 @@ spec:
               key: EXHORT_SNYK_TOKEN
       script: |
         #!/bin/sh
-
+        echo "Running the scan using trusted content. Please wait it may take some time."
+        ls -lah
         project_directory="$(params.project-directory-path)"
         manifest_file="$(params.manifest-file-path)"
         output_file="$(params.output-file-path)"
@@ -239,6 +240,7 @@ spec:
         else
           sh /exhort.sh "$manifest_file" "$output_file"
         fi
+        echo "Scan results: " |  cat "$output_file"
       runAfter:
         - clone-repository
       workspaces:
