@@ -215,23 +215,11 @@ spec:
             image: quay.io/lrangine/exhort-javascript-api:0.7.0-alpha
             workingDir: "$(workspaces.source.path)"
             env:
-              - name: AUTH_TOKEN
+              - name: EXHORT_SNYK_TOKEN
                 valueFrom:
                   secretKeyRef:
-                    name: crda-scan-secrets
-                    key: AUTH_TOKEN
-              - name: CONSENT_TELEMETRY
-                value: "false"
-              - name: CRDA_KEY
-                valueFrom:
-                  secretKeyRef:
-                    name: crda-scan-secrets
-                    key: CRDA_KEY
-              - name: HOST
-                valueFrom:
-                  secretKeyRef:
-                    name: crda-scan-secrets
-                    key: HOST
+                    name: exhort
+                    key: EXHORT_SNYK_TOKEN
             script: |
               #!/usr/bin/env bash
               echo 'ready to scan'
