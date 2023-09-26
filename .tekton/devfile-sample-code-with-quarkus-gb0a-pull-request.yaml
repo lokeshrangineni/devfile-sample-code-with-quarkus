@@ -240,13 +240,21 @@ spec:
               manifest_file="$(params.manifest-file-path)"
               output_file="$(params.output-file-path)"
               if [ -n "$project_directory" ]; then
-                echo "in if block"
                 sh /exhort.sh "$project_directory/$manifest_file" "$output_file"
               else
-                echo "in else block"
                 sh /exhort.sh "$manifest_file" "$output_file"
               fi
-              echo "Script ran Successfully."
+              echo 'Formatting the Task Results'
+              jq -rce \
+              '{vulnerabilities:{
+               critical: (.report."critical_vulnerabilities"),
+               high: (.report."high_vulnerabilities"),
+               medium: (.report."medium_vulnerabilities"),
+               low: (.report."low_vulnerabilities")
+               }}' "$output_file" | tee $(results.CVE_SCAN_RESULT.path)
+               NOTE="Task $(context.task.name) completed: Refer to Tekton task result CVE_SCAN_RESULT for vulnerabilities scanned by RHTC."
+               TEST_OUTPUT="SUCCESS $NOTE"
+               echo "${TEST_OUTPUT}" | tee $(results.TEST_OUTPUT.path)
       runAfter:
         - clone-repository
       workspaces:
