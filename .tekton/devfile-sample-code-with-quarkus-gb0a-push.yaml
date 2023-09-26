@@ -104,6 +104,18 @@ spec:
       description: Java build
       name: java
       type: string
+    - default: "pom.xml"
+      description: Path to target manifest file within the project directory.
+      name: manifest-file-path
+      type: string
+    - default: "project-package"
+      description: Path to directory within workspace, where the project is installed.
+      name: project-directory-path
+      type: string
+    - default: "redhat-dependency-analytics-report.json"
+      description: Path to file within workspace, where the analysis report is saved.
+      name: output-file-path
+      type: string
     - default: ""
       description: Image tag expiration time, time values could be something like
         1h, 2d, 3w for hours, days, and weeks, respectively.
@@ -220,8 +232,18 @@ spec:
             script: |
               #!/usr/bin/env bash
               echo "Running the scan using trusted content. Please wait it may take some time."
-              sh /exhort.sh "pom.xml" "scan_result.json"
-              echo "Script ran Successfully." | cat scan_result.json
+              ls -lah
+              project_directory="$(params.project-directory-path)"
+              manifest_file="$(params.manifest-file-path)"
+              output_file="$(params.output-file-path)"
+              if [ -n "$project_directory" ]; then
+                echo "in if block"
+                sh /exhort.sh "$project_directory/$manifest_file" "$output_file"
+              else
+                echo "in else block"
+                sh /exhort.sh "$manifest_file" "$output_file"
+              fi
+              echo "Script ran Successfully."
       runAfter:
         - clone-repository
       workspaces:
