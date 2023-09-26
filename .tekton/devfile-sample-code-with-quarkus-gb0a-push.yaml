@@ -241,6 +241,7 @@ spec:
               else
                 sh /exhort.sh "$manifest_file" "$output_file"
               fi
+              cat "$output_file"
               echo 'Formatting the Task Results'
               jq -rce \
               '{vulnerabilities:{
