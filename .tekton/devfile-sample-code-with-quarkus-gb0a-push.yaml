@@ -219,22 +219,9 @@ spec:
                     key: EXHORT_SNYK_TOKEN
             script: |
               #!/usr/bin/env bash
-              echo 'ready to scan'
-              /crda.sh pom.xml crda_scan_output.json
-              echo 'CRDA Scan is completed'
-              echo 'Printing scan results'
-              more crda_scan_output.json
-              echo 'Formatting the Task Results'
-              jq -rce \
-              '{vulnerabilities:{
-              critical: (.report."critical_vulnerabilities"),
-              high: (.report."high_vulnerabilities"),
-              medium: (.report."medium_vulnerabilities"),
-              low: (.report."low_vulnerabilities")
-              }}' crda_scan_output.json | tee $(results.CVE_SCAN_RESULT.path)
-              NOTE="Task $(context.task.name) completed: Refer to Tekton task result CVE_SCAN_RESULT for vulnerabilities scanned by RHTC."
-              TEST_OUTPUT="SUCCESS $NOTE"
-              echo "${TEST_OUTPUT}" | tee $(results.TEST_OUTPUT.path)
+              echo "Running the scan using trusted content. Please wait it may take some time."
+              sh /exhort.sh "pom.xml" "scan_result.json"
+              echo "Script ran Successfully." | cat scan_result.json
       runAfter:
         - clone-repository
       workspaces:
