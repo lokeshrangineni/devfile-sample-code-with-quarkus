@@ -243,14 +243,13 @@ spec:
               else
                 sh /exhort.sh "$manifest_file" "$output_file"
               fi
-              cat "$output_file"
               echo 'Formatting the Task Results'
               jq -rce \
               '{vulnerabilities:{
-               critical: (.report."critical_vulnerabilities"),
-               high: (.report."high_vulnerabilities"),
-               medium: (.report."medium_vulnerabilities"),
-               low: (.report."low_vulnerabilities")
+               critical: (.report.summary.vulnerabilities."critical"),
+               high: (.report.summary.vulnerabilities."high"),
+               medium: (.report.summary.vulnerabilities."medium"),
+               low: (.report.summary.vulnerabilities."low")
                }}' "$output_file" | tee $(results.CVE_SCAN_RESULT.path)
                NOTE="Task $(context.task.name) completed: Refer to Tekton task result CVE_SCAN_RESULT for vulnerabilities scanned by RHTC."
                TEST_OUTPUT="SUCCESS $NOTE"
