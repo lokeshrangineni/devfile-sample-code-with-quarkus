@@ -111,7 +111,7 @@ spec:
       description: Path to target manifest file within the project directory.
       name: manifest-file-path
       type: string
-    - default: "project-package"
+    - default: ""
       description: Path to directory within workspace, where the project is installed.
       name: project-directory-path
       type: string
