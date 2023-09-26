@@ -104,6 +104,18 @@ spec:
       description: Java build
       name: java
       type: string
+    - default: "pom.xml"
+      description: Path to target manifest file within the project directory.
+      name: manifest-file-path
+      type: string
+    - default: ""
+      description: Path to directory within workspace, where the project is installed.
+      name: project-directory-path
+      type: string
+    - default: "redhat-dependency-analytics-report.json"
+      description: Path to file within workspace, where the analysis report is saved.
+      name: output-file-path
+      type: string
     - default: ""
       description: Image tag expiration time, time values could be something like
         1h, 2d, 3w for hours, days, and weeks, respectively.
@@ -198,50 +210,48 @@ spec:
       workspaces:
       - name: source
         workspace: workspace
-    - name: trusted-content1
-      params:
-        - name: manifest-file-path
-          description: Path to target manifest file within the project directory.
-          default: pom.xml
-
-        - name: project-directory-path
-          description: Path to directory within workspace, where the project is installed.
-          default: project-package
-
-        - name: output-file-path
-          description: Path to file within workspace, where the analysis report is saved.
-          default: redhat-dependency-analytics-report.json
-
-        - name: image
-          description: Image where Exhort Javascript API and required dependencies are installed.
-          default: quay.io/ecosystem-appeng/exhort-javascript-api:0.7.0-alpha
+    - name: trusted-content
       taskSpec:
+        results:
+          - name: CVE_SCAN_RESULT
+            description: trusted content scan result
+          - name: TEST_OUTPUT
+            description: trusted content output
         workspaces:
           - name: source
         steps:
-          - name: redhat-dependency-analytics1
+          - name: run-redhat-crda-scan-step
             image: quay.io/lrangine/exhort-javascript-api:0.7.0-alpha
             workingDir: "$(workspaces.source.path)"
-        env:
-          - name: EXHORT_SNYK_TOKEN
-            valueFrom:
-              secretKeyRef:
-                name: exhort
-                key: EXHORT_SNYK_TOKEN
-        script: |
-        #!/bin/sh
-        echo "Running the scan using trusted content. Please wait it may take some time."
-        ls -lah
-        project_directory="$(params.project-directory-path)"
-        manifest_file="$(params.manifest-file-path)"
-        output_file="$(params.output-file-path)"
-
-        if [ -n "$project_directory" ]; then
-        sh /exhort.sh "$project_directory/$manifest_file" "$output_file"
-        else
-        sh /exhort.sh "$manifest_file" "$output_file"
-        fi
-        echo "Scan results: " |  cat "$output_file"
+            env:
+              - name: EXHORT_SNYK_TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    name: exhort
+                    key: EXHORT_SNYK_TOKEN
+            script: |
+              #!/usr/bin/env bash
+              echo "Running the scan using trusted content. Please wait it may take some time."
+              ls -lah
+              project_directory="$(params.project-directory-path)"
+              manifest_file="$(params.manifest-file-path)"
+              output_file="$(params.output-file-path)"
+              if [ -n "$project_directory" ]; then
+                sh /exhort.sh "$project_directory/$manifest_file" "$output_file"
+              else
+                sh /exhort.sh "$manifest_file" "$output_file"
+              fi
+              echo 'Formatting the Task Results'
+              jq -rce \
+              '{vulnerabilities:{
+               critical: (.report."critical_vulnerabilities"),
+               high: (.report."high_vulnerabilities"),
+               medium: (.report."medium_vulnerabilities"),
+               low: (.report."low_vulnerabilities")
+               }}' "$output_file" | tee $(results.CVE_SCAN_RESULT.path)
+               NOTE="Task $(context.task.name) completed: Refer to Tekton task result CVE_SCAN_RESULT for vulnerabilities scanned by RHTC."
+               TEST_OUTPUT="SUCCESS $NOTE"
+               echo "${TEST_OUTPUT}" | tee $(results.TEST_OUTPUT.path)
       runAfter:
         - clone-repository
       workspaces:
