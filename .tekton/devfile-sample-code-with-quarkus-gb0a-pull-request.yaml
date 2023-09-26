@@ -224,7 +224,7 @@ spec:
           - name: source
         steps:
           - name: run-redhat-crda-scan-step
-            image: quay.io/lrangine/exhort-javascript-api:0.7.0-alpha
+            image: quay.io/ecosystem-appeng/exhort-javascript-api:0.7.0-alpha
             workingDir: "$(workspaces.source.path)"
             env:
               - name: EXHORT_SNYK_TOKEN
@@ -235,7 +235,6 @@ spec:
             script: |
               #!/usr/bin/env bash
               echo "Running the scan using trusted content. Please wait it may take some time."
-              ls -lah
               project_directory="$(params.project-directory-path)"
               manifest_file="$(params.manifest-file-path)"
               output_file="$(params.output-file-path)"
@@ -247,10 +246,10 @@ spec:
               echo 'Formatting the Task Results'
               jq -rce \
               '{vulnerabilities:{
-               critical: (.report."critical_vulnerabilities"),
-               high: (.report."high_vulnerabilities"),
-               medium: (.report."medium_vulnerabilities"),
-               low: (.report."low_vulnerabilities")
+               critical: (.report.summary.vulnerabilities."critical"),
+               high: (.report.summary.vulnerabilities."high"),
+               medium: (.report.summary.vulnerabilities."medium"),
+               low: (.report.summary.vulnerabilities."low")
                }}' "$output_file" | tee $(results.CVE_SCAN_RESULT.path)
                NOTE="Task $(context.task.name) completed: Refer to Tekton task result CVE_SCAN_RESULT for vulnerabilities scanned by RHTC."
                TEST_OUTPUT="SUCCESS $NOTE"
