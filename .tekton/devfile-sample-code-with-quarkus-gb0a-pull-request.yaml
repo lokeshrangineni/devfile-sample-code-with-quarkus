@@ -224,7 +224,7 @@ spec:
           - name: source
         steps:
           - name: run-redhat-crda-scan-step
-            image: quay.io/ecosystem-appeng/exhort-javascript-api:0.7.0-alpha
+            image: quay.io/ecosystem-appeng/exhort-javascript-api:0.7.3-alpha
             workingDir: "$(workspaces.source.path)"
             env:
               - name: EXHORT_SNYK_TOKEN
